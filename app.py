@@ -789,6 +789,50 @@ if uploaded_file is not None:
                 Each box represents the distribution of that nucleotide across all sequences. 
                 This helps us understand if certain nucleotides are more common in our sequences.
                 """)
+                # Nucleotide composition
+                st.subheader("Nucleotide Composition")
+                st.markdown("""
+                ### Nucleotide Composition Analysis
+                
+                This visualization shows the distribution of the four DNA nucleotides (A, T, G, C) across all sequences in your dataset.
+                
+                #### What This Plot Shows:
+                
+                - **X-axis**: The four nucleotides (Adenine, Thymine, Guanine, Cytosine)
+                - **Y-axis**: Percentage of each nucleotide (0-100%)
+                - **Box plots**: Statistical distribution of each nucleotide across sequences
+                  * Box: Middle 50% of the data (interquartile range)
+                  * Line in box: Median value
+                  * Whiskers: Range of values (excluding outliers)
+                  * Dots: Outliers (sequences with unusual composition)
+                
+                #### How to Interpret This Visualization:
+                
+                1. **Balance**: In random DNA, you'd expect roughly equal proportions (25% each)
+                2. **A-T Ratio**: A and T should be similar due to base-pairing rules
+                3. **G-C Ratio**: G and C should be similar due to base-pairing rules
+                4. **Skewed Distribution**: If one nucleotide appears much more/less than others, this suggests functional bias
+                
+                #### Biological Significance:
+                
+                - **Coding vs Non-coding**: Coding regions often show different nucleotide biases than non-coding regions
+                - **Protein Classes**: Different protein families may have characteristic nucleotide preferences
+                  * Membrane proteins: Often higher in hydrophobic-coding nucleotides
+                  * DNA-binding proteins: Sometimes higher in positive charge-coding nucleotides
+                - **Species Differences**: Different organisms have different nucleotide preferences
+                  * AT-rich: Many insects, plants
+                  * GC-rich: Many bacteria, some vertebrates
+                
+                #### Connection to Protein Function:
+                
+                Nucleotide composition can indirectly affect:
+                - Protein amino acid composition
+                - mRNA stability
+                - DNA structural properties
+                - Gene expression levels
+                
+                Higher variability (wider boxes) suggests more diverse sequences in your dataset.
+                """)
                 st.pyplot(plot_nucleotide_composition(sequences))
                 
                 # GC content analysis
@@ -798,6 +842,42 @@ if uploaded_file is not None:
                 - GC-rich regions are more stable
                 - Different organisms have different GC content
                 - It can help identify different types of DNA sequences
+                """)
+                st.subheader("GC Content Analysis")
+                st.markdown("""
+                ### Understanding GC Content
+                
+                GC content is the percentage of G and C nucleotides in a DNA sequence. This metric is crucial in bioinformatics for several reasons:
+                
+                #### Why GC Content Matters:
+                - **Structural Stability**: GC pairs have three hydrogen bonds (compared to two in AT pairs), making GC-rich regions more thermally stable
+                - **Taxonomic Marker**: Different organisms have characteristic GC content ranges:
+                  * Mammals: ~40-45%
+                  * Birds: ~40-50%
+                  * Bacteria: Highly variable (20-75%)
+                - **Functional Correlation**: GC content often correlates with gene function
+                  * Housekeeping genes: Usually higher GC content
+                  * Tissue-specific genes: Often lower GC content
+                - **Technical Considerations**: High GC regions can be harder to sequence and amplify in PCR
+                
+                #### How to Interpret the Plots:
+                
+                **Left Plot - Overall Distribution:**
+                - Shows how GC content varies across all sequences
+                - X-axis: Percentage of GC content (0-100%)
+                - Y-axis: Number of sequences with that GC content
+                - Look for patterns like bimodal distributions which might indicate different sequence types
+                
+                **Right Plot - Distribution by Class:**
+                - Shows how GC content varies between different protein classes
+                - Each box represents the range of GC content for a specific protein class
+                - The line in each box is the median value
+                - If boxes for different classes don't overlap much, GC content is a good predictor of function
+                
+                #### What These Plots Tell You About Your Sequences:
+                - Classes with higher GC content may be more structurally stable
+                - Large variations within a class suggest diverse sequences with the same function
+                - Similar GC content between classes suggests that other features are more important for function
                 """)
                 col1, col2 = st.columns(2)
                 with col1:
@@ -839,6 +919,48 @@ if uploaded_file is not None:
                     This table shows how many times each k-mer appears in each sequence. 
                     Each row is a sequence, and each column is a different k-mer. 
                     The numbers show how many times that k-mer appears in the sequence.
+                    """)
+                    st.markdown(f"""
+                    ### Understanding the K-mer Feature Matrix
+                    
+                    #### What is a K-mer?
+                    A k-mer is a substring of length k from a DNA sequence. For example, with k=3, the sequence "ATGCGA" would contain the following k-mers:
+                    - ATG
+                    - TGC
+                    - GCG
+                    - CGA
+                    
+                    #### What This Matrix Shows:
+                    This table displays how many times each k-mer appears in each sequence:
+                    - **Rows**: Individual DNA sequences from your dataset
+                    - **Columns**: All possible k-mers (there are {4**k} possible {k}-mers with 4 nucleotides)
+                    - **Values**: Frequency counts of each k-mer in each sequence
+                    
+                    #### How to Interpret This Matrix:
+                    
+                    1. **Higher values** (highlighted in yellow) indicate k-mers that appear frequently in a sequence
+                    2. **Patterns of k-mers** are what the machine learning model uses to classify sequences
+                    3. **Distinctive k-mers** for each protein class serve as "fingerprints" for classification
+                    
+                    #### Biological Significance:
+                    
+                    Certain k-mers appear more often in specific protein families:
+                    - **GPCRs** often contain more "ATG", "TGG", and "GTG" k-mers
+                    - **Tyrosine kinases** frequently have "AAG", "GAA", and "GAG" patterns
+                    - **Ion channels** typically show higher counts of "CTC", "TCA", and "CAT"
+                    
+                    #### How These Features Are Used in Classification:
+                    
+                    1. This matrix is converted to a numerical format for machine learning
+                    2. The model identifies which k-mers are most important for distinguishing between classes
+                    3. When classifying a new sequence, the model examines its k-mer pattern to determine its likely protein class
+                    
+                    #### Why K-mer Analysis Works:
+                    
+                    DNA sequences that code for similar proteins often share similar patterns of k-mers, even if their overall sequences differ. This is because:
+                    - Similar protein functions require similar DNA motifs
+                    - Evolutionary conservation preserves important sequence patterns
+                    - K-mers capture these patterns without requiring perfect sequence alignment
                     """)
                     st.dataframe(feature_df.style.highlight_max(axis=0))
                     
@@ -982,6 +1104,63 @@ if uploaded_file is not None:
                                         {protein_name.lower()}-related functions in the organism. This can guide further experimental work and analysis.</p>
                                     </div>
                                     """, unsafe_allow_html=True)
+                                
+                                # Add comprehensive explanation of metrics and outputs
+                                st.subheader("Understanding the Results")
+                                st.markdown("""
+                                ### What Do These Results Mean?
+                                
+                                #### 1. Prediction Table
+                                The table above shows the prediction results for each sequence:
+                                - **Sequence**: The name/ID of your DNA sequence from the FASTA file
+                                - **True Class**: The actual class of the sequence (if provided in the FASTA header)
+                                - **Predicted Class**: What our model thinks the sequence is
+                                - **Correct**: Whether the prediction matches the true class (green = correct, red = incorrect)
+                                
+                                #### 2. Model Accuracy
+                                The accuracy percentage shows how many sequences were correctly classified:
+                                - **90-100%**: Excellent - The model is highly reliable
+                                - **70-90%**: Good - Most predictions are trustworthy
+                                - **50-70%**: Fair - Use predictions with caution
+                                - **Below 50%**: Poor - Predictions may not be reliable, consider more data or a different model
+                                
+                                #### 3. Protein Classes Explained
+                                
+                                Each prediction places your DNA sequence into one of these protein family categories:
+                                
+                                | Class | Protein Type | Function | Medical Relevance |
+                                |-------|-------------|----------|-------------------|
+                                | 0 | GPCRs | Cell signaling | ~30% of all drugs target these |
+                                | 1 | Tyrosine kinases | Cell growth control | Cancer treatments |
+                                | 2 | Protein phosphatases | Signal regulation | Immune disorders |
+                                | 3 | PTPs | Specific phosphate removal | Metabolic disorders |
+                                | 4 | AARSs | Protein synthesis | Neurological diseases |
+                                | 5 | Ion channels | Electrical signaling | Epilepsy, heart disease |
+                                | 6 | Transcription Factors | Gene regulation | Developmental disorders |
+                                
+                                #### 4. What To Do With These Results
+                                
+                                - **Research Focus**: Concentrate on sequences with high confidence predictions
+                                - **Laboratory Validation**: Use predictions to guide experimental work
+                                - **Drug Discovery**: If searching for drug targets, GPCRs and kinases are especially valuable
+                                - **Disease Understanding**: Different protein classes are linked to different diseases
+                                
+                                #### 5. K-mer Analysis
+                                
+                                The k={k} analysis breaks your DNA into {k}-nucleotide chunks to find patterns:
+                                - Higher counts of specific k-mers often indicate a particular protein class
+                                - The feature matrix shows which patterns are present in each sequence
+                                - For a deeper understanding, examine the "Most Common k-mers" in the K-mer Features tab
+                                
+                                #### 6. GC Content Insights
+                                
+                                The GC content (percentage of G and C nucleotides) often correlates with function:
+                                - **GPCRs**: Typically lower GC content (~40-45%)
+                                - **Transcription Factors**: Often higher GC content (~55-60%)
+                                - **Ion Channels**: Usually moderate GC content (~50%)
+                                
+                                This information can help confirm or question the predictions made by the model.
+                                """)
                                 
                                 if accuracy < 0.5:
                                     st.warning("""
