@@ -1,0 +1,1 @@
+{"url":"http://rest.uniprot.org/uniprotkb/query=*&amp;format=fasta&amp;limit=100","messages":["The 'accession' value has invalid format. It should be a valid UniProtKB accession"]}
